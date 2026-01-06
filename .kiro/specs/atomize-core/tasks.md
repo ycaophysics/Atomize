@@ -63,8 +63,8 @@ This implementation plan builds Atomize incrementally, starting with core data m
   - Verify append-only semantics work correctly
   - Ask the user if questions arise
 
-- [ ] 4. Priority Engine
-  - [ ] 4.1 Implement PriorityEngine
+- [x] 4. Priority Engine
+  - [x] 4.1 Implement PriorityEngine
     - Create calculatePriority() with deadline-based rules
     - Implement prioritizeTasks() for sorting
     - Implement getNextTask() for next recommendation
@@ -77,7 +77,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - **Property 16: Priority reasoning**
     - **Validates: Requirements 3.2, 3.3, 3.5, 3.6**
 
-  - [ ] 4.3 Implement priority override
+  - [x] 4.3 Implement priority override
     - Add manual priority setting that persists
     - Ensure override is recorded in history
     - _Requirements: 3.4_
