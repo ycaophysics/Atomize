@@ -155,8 +155,8 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - **Property 4: Deadline parsing round-trip**
     - **Validates: Requirements 1.6**
 
-- [ ] 8. Task Manager
-  - [ ] 8.1 Implement TaskManager
+- [-] 8. Task Manager
+  - [x] 8.1 Implement TaskManager
     - Create createTask() that always appends
     - Implement getTask(), getTasks() with filters
     - Implement updateTask() with explicit flag enforcement
@@ -164,7 +164,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - Implement deleteTask() with explicit flag enforcement
     - _Requirements: 9.2, 9.3, 9.4, 9.5, 9.9_
 
-  - [ ] 8.2 Implement task filtering methods
+  - [x] 8.2 Implement task filtering methods
     - getTodayTasks() - tasks scheduled for today, max 7
     - getUpcomingTasks() - tasks in next 7 days
     - Apply priority ordering to results
@@ -175,8 +175,8 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - **Property 23: Today task limit**
     - **Validates: Requirements 6.1, 6.2, 6.4**
 
-- [ ] 9. Plan Manager
-  - [ ] 9.1 Implement PlanManager
+- [-] 9. Plan Manager
+  - [x] 9.1 Implement PlanManager
     - Create getTodayPlan() with progress tracking
     - Create getWeekPlan() for weekly view
     - Implement rescheduleTask() and deferTask()
@@ -188,7 +188,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - **Property 24: Progress tracking**
     - **Validates: Requirements 4.1, 4.2, 6.6**
 
-  - [ ] 9.3 Implement adaptive planning
+  - [x] 9.3 Implement adaptive planning
     - Create adaptPlan() for automatic rescheduling
     - Handle new high-priority tasks
     - Handle deadline changes
@@ -206,8 +206,8 @@ This implementation plan builds Atomize incrementally, starting with core data m
   - Verify end-to-end task flow works
   - Ask the user if questions arise
 
-- [ ] 11. Progress and Streak Tracking
-  - [ ] 11.1 Implement progress tracking
+- [-] 11. Progress and Streak Tracking
+  - [x] 11.1 Implement progress tracking
     - Track daily completion counts
     - Calculate and store streaks
     - Handle streak reset on missed days
