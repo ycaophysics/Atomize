@@ -125,14 +125,19 @@ Atomize is a Gemini-powered anti-procrastination assistant designed for busy pro
 
 ### Requirement 9: Data Persistence
 
-**User Story:** As a user, I want my tasks and progress saved reliably, so that I never lose my work.
+**User Story:** As a user, I want my tasks and progress saved reliably online, so that I never lose my work and can access it from anywhere.
 
 #### Acceptance Criteria
 
-1. THE System SHALL persist all tasks, priorities, and completion status to local storage
-2. WHEN the application is reopened THEN THE System SHALL restore the user's complete task state
-3. THE System SHALL save changes immediately after any user action
-4. THE System SHALL support exporting task data in a standard format (JSON)
+1. THE System SHALL persist all tasks, priorities, and completion status to online storage
+2. IF the user does not explicitly request a change THEN THE System SHALL only append new data, never modify or delete existing data
+3. WHEN the user explicitly requests a modification THEN THE System SHALL make the minimum necessary change to the specific task
+4. THE System SHALL NOT delete any task data unless the user explicitly requests deletion
+5. THE System SHALL NOT batch-modify multiple tasks unless the user explicitly requests it
+6. WHEN the application is reopened THEN THE System SHALL restore the user's complete task state from online storage
+7. THE System SHALL save changes immediately after any user action
+8. THE System SHALL support exporting task data in a standard format (JSON)
+9. WHEN a task is "completed" or "archived" THEN THE System SHALL mark it as such but retain the data
 
 ### Requirement 10: No Extra Burden Principle
 
@@ -224,9 +229,9 @@ Atomize is a Gemini-powered anti-procrastination assistant designed for busy pro
 
 #### Acceptance Criteria
 
-1. THE System SHALL store task data locally by default
+1. THE System SHALL store task data securely in online storage with appropriate access controls
 2. THE System SHALL NOT share user data with third parties without explicit consent
-3. THE System SHALL allow users to delete all their data at any time
+3. THE System SHALL allow users to explicitly delete their data when requested
 4. WHEN using AI services THEN THE System SHALL minimize data sent and not log sensitive content
 5. THE System SHALL clearly communicate what data is stored and where
 
