@@ -26,8 +26,8 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - Add provider factory with config-based selection
     - _Requirements: 17.4 (minimize data sent to AI)_
 
-- [ ] 2. Data Models and Storage Layer
-  - [ ] 2.1 Implement core Task data model
+- [x] 2. Data Models and Storage Layer
+  - [x] 2.1 Implement core Task data model
     - Create Task interface with all fields (id, title, description, rawInput, parentId, childIds, deadline, scheduledDate, estimatedMinutes, priority, priorityReason, status, context, history)
     - Create TaskInput, TaskUpdate, TaskFilter types
     - Create TaskHistoryEntry type for append-only history
@@ -37,7 +37,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - **Property 12: Priority classification validity**
     - **Validates: Requirements 3.1**
 
-  - [ ] 2.3 Implement TaskStore with append-only semantics
+  - [x] 2.3 Implement TaskStore with append-only semantics
     - Create TaskStore class with CRUD operations
     - Implement explicit modification enforcement (throw if explicit=false)
     - Implement history appending on every change
@@ -52,7 +52,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - **Property 32: History append-only**
     - **Validates: Requirements 9.1, 9.2, 9.3, 9.4, 9.9**
 
-  - [ ] 2.5 Implement online storage adapter
+  - [x] 2.5 Implement online storage adapter
     - Create StorageAdapter interface
     - Implement localStorage adapter for development
     - Add immediate save after every mutation
