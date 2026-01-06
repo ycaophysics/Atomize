@@ -258,59 +258,59 @@ This implementation plan builds Atomize incrementally, starting with core data m
   - Test full conversation flow
   - Ask the user if questions arise
 
-- [ ] 15. User Interface - Chat Interface
-  - [ ] 15.1 Create Chat UI component
+- [-] 15. User Interface - Chat Interface
+  - [x] 15.1 Create Chat UI component
     - Build chat message list with user/assistant distinction
     - Create input field with send button
     - Display quick action buttons on responses
     - _Requirements: 15.1, 15.2, 15.4_
 
-  - [ ] 15.2 Implement real-time interaction
+  - [x] 15.2 Implement real-time interaction
     - Connect to ConversationManager
     - Show loading states during AI processing
     - Display clarification questions inline
     - _Requirements: 15.3_
 
-- [ ] 16. User Interface - Plan View
-  - [ ] 16.1 Create Plan View component
+- [-] 16. User Interface - Plan View
+  - [x] 16.1 Create Plan View component
     - Display Today section with task cards
     - Display Upcoming section (collapsible)
     - Display Later section (collapsed by default)
     - _Requirements: 6.1, 6.2, 6.3_
 
-  - [ ] 16.2 Implement task cards
+  - [x] 16.2 Implement task cards
     - Show title, priority indicator, time estimate
     - Show progress bar for parent tasks
     - Add quick action buttons (Done, Defer)
     - _Requirements: 6.5, 6.6, 5.5_
 
-  - [ ] 16.3 Implement progress display
+  - [x] 16.3 Implement progress display
     - Show "X of Y tasks done today"
     - Show current streak
     - Display celebration on completion
     - _Requirements: 6.6, 8.1, 8.2, 8.5_
 
-- [ ] 17. User Interface - Task Detail View
-  - [ ] 17.1 Create Task Detail component
+- [-] 17. User Interface - Task Detail View
+  - [x] 17.1 Create Task Detail component
     - Show full task information
     - Display micro-task breakdown
     - Show context and history
     - _Requirements: 14.3, 14.5_
 
-  - [ ] 17.2 Implement task editing
+  - [x] 17.2 Implement task editing
     - Allow title/description editing (explicit)
     - Allow deadline changes
     - Allow priority override
     - _Requirements: 3.4, 16.2_
 
-- [ ] 18. Notification Manager
-  - [ ] 18.1 Implement NotificationManager
+- [-] 18. Notification Manager
+  - [x] 18.1 Implement NotificationManager
     - Create scheduleReminder() for task reminders
     - Implement snoozeNotification()
     - Store notification preferences
     - _Requirements: 7.1, 7.2, 7.5_
 
-  - [ ] 18.2 Implement gentle check-ins
+  - [x] 18.2 Implement gentle check-ins
     - Generate supportive reminder messages
     - Offer to break down repeatedly snoozed tasks
     - _Requirements: 7.3, 7.4, 7.6_

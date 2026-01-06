@@ -1,65 +1,248 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { Chat } from '@/components/chat';
+import { PlanView } from '@/components/plan';
+import { TaskDetail } from '@/components/task';
+import { ConversationManager, TaskManager, PlanManager, ProgressManager } from '@/lib/managers';
+import type { ConversationEntry } from '@/lib/managers';
+import type { ConversationResponse, QuickAction, UserInput } from '@/lib/managers/conversation-manager';
+import type { Plan } from '@/lib/managers/plan-manager';
+import { TaskStore, LocalStorageAdapter } from '@/lib/store';
+import { PriorityEngine } from '@/lib/engines';
+import type { Task, TaskUpdate } from '@/lib/types';
+
+// Mock LLM provider for demo (replace with real provider)
+const mockLLMProvider = {
+  name: 'mock',
+  async generate() {
+    return {
+      content: 'Task noted!',
+      finishReason: 'stop' as const,
+    };
+  },
+  async generateJSON<T>(): Promise<T> {
+    return {
+      needsClarification: false,
+      confidence: 0.9,
+    } as T;
+  },
+};
+
+type View = 'chat' | 'plan';
 
 export default function Home() {
+  const [view, setView] = useState<View>('chat');
+  const [messages, setMessages] = useState<ConversationEntry[]>([]);
+  const [lastResponse, setLastResponse] = useState<ConversationResponse>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentTaskId, setCurrentTaskId] = useState<string>();
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [todayPlan, setTodayPlan] = useState<Plan>({
+    date: new Date(),
+    tasks: [],
+    completedCount: 0,
+    totalCount: 0,
+    estimatedMinutes: 0,
+  });
+  const [upcomingTasks, setUpcomingTasks] = useState<Task[]>([]);
+  const [laterTasks, setLaterTasks] = useState<Task[]>([]);
+  const [streak, setStreak] = useState(0);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Managers
+  const [store, setStore] = useState<TaskStore | null>(null);
+  const [conversationManager, setConversationManager] = useState<ConversationManager | null>(null);
+  const [taskManager, setTaskManager] = useState<TaskManager | null>(null);
+  const [planManager, setPlanManager] = useState<PlanManager | null>(null);
+  const [progressManager, setProgressManager] = useState<ProgressManager | null>(null);
+
+  // Initialize managers
+  useEffect(() => {
+    const init = async () => {
+      const storage = new LocalStorageAdapter();
+      const taskStore = new TaskStore(storage);
+      await taskStore.initialize();
+
+      const priorityEngine = new PriorityEngine();
+      const tm = new TaskManager(taskStore, priorityEngine);
+      const pm = new PlanManager(taskStore, priorityEngine);
+      const prm = new ProgressManager(taskStore);
+      const cm = new ConversationManager(taskStore, mockLLMProvider);
+
+      setStore(taskStore);
+      setTaskManager(tm);
+      setPlanManager(pm);
+      setProgressManager(prm);
+      setConversationManager(cm);
+      setIsInitialized(true);
+    };
+
+    init();
+  }, []);
+
+  // Refresh plan data
+  const refreshPlanData = useCallback(() => {
+    if (!planManager || !taskManager || !progressManager) return;
+
+    setTodayPlan(planManager.getTodayPlan());
+    setUpcomingTasks(taskManager.getUpcomingTasks());
+    setLaterTasks(taskManager.getLaterTasks());
+    setStreak(progressManager.calculateStreak());
+  }, [planManager, taskManager, progressManager]);
+
+  // Initial data load
+  useEffect(() => {
+    if (isInitialized) {
+      refreshPlanData();
+    }
+  }, [isInitialized, refreshPlanData]);
+
+  const sendMessage = async (text: string) => {
+    if (!conversationManager) return;
+
+    setIsLoading(true);
+
+    try {
+      const input: UserInput = {
+        text,
+        timestamp: new Date(),
+        context: {
+          currentTaskId,
+          currentView: view,
+        },
+      };
+
+      const response = await conversationManager.processInput(input);
+      setMessages(conversationManager.getHistory());
+      setLastResponse(response);
+
+      if (response.tasks && response.tasks.length > 0) {
+        setCurrentTaskId(response.tasks[0].id);
+      }
+
+      refreshPlanData();
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleQuickAction = async (action: QuickAction) => {
+    if (action.taskId) {
+      setCurrentTaskId(action.taskId);
+    }
+
+    const commandMap: Record<string, string> = {
+      done: 'done',
+      defer: 'defer',
+      break_down: 'break it down',
+      what_next: "what's next",
+    };
+
+    await sendMessage(commandMap[action.action] || action.action);
+  };
+
+  const handleComplete = async (taskId: string) => {
+    if (!store) return;
+    await store.complete(taskId);
+    refreshPlanData();
+    setSelectedTask(null);
+  };
+
+  const handleDefer = async (taskId: string) => {
+    if (!store) return;
+    await store.defer(taskId);
+    refreshPlanData();
+    setSelectedTask(null);
+  };
+
+  const handleTaskUpdate = async (taskId: string, updates: TaskUpdate) => {
+    if (!store) return;
+    await store.update(taskId, updates, true);
+    refreshPlanData();
+    const updated = store.get(taskId);
+    if (updated) setSelectedTask(updated);
+  };
+
+  const handleTaskClick = (task: Task) => {
+    setSelectedTask(task);
+  };
+
+  if (!isInitialized) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="flex flex-col h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b px-4 py-3 flex items-center justify-between">
+        <h1 className="text-xl font-bold text-gray-900">⚛️ Atomize</h1>
+        <nav className="flex gap-2">
+          <button
+            onClick={() => setView('chat')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              view === 'chat'
+                ? 'bg-blue-100 text-blue-700'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            💬 Chat
+          </button>
+          <button
+            onClick={() => setView('plan')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              view === 'plan'
+                ? 'bg-blue-100 text-blue-700'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            📋 Plan
+          </button>
+        </nav>
+      </header>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-hidden">
+        {view === 'chat' ? (
+          <Chat
+            messages={messages}
+            lastResponse={lastResponse}
+            isLoading={isLoading}
+            onSendMessage={sendMessage}
+            onQuickAction={handleQuickAction}
+          />
+        ) : (
+          <div className="h-full overflow-y-auto">
+            <PlanView
+              todayPlan={todayPlan}
+              upcomingTasks={upcomingTasks}
+              laterTasks={laterTasks}
+              streak={streak}
+              onComplete={handleComplete}
+              onDefer={handleDefer}
+              onTaskClick={handleTaskClick}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+          </div>
+        )}
       </main>
+
+      {/* Task Detail Modal */}
+      {selectedTask && (
+        <TaskDetail
+          task={selectedTask}
+          childTasks={store?.getAll({ parentId: selectedTask.id }) || []}
+          onUpdate={handleTaskUpdate}
+          onComplete={handleComplete}
+          onDefer={handleDefer}
+          onClose={() => setSelectedTask(null)}
+        />
+      )}
     </div>
   );
 }
