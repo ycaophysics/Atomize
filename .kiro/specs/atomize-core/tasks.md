@@ -86,8 +86,8 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - **Property 14: Priority override**
     - **Validates: Requirements 3.4**
 
-- [ ] 5. Atomization Engine
-  - [ ] 5.1 Implement AtomizationEngine core
+- [x] 5. Atomization Engine
+  - [x] 5.1 Implement AtomizationEngine core
     - Create atomize() method using LLM provider
     - Implement time estimation logic
     - Ensure micro-tasks are 15-60 minutes
@@ -100,7 +100,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - **Property 9: Time estimate presence**
     - **Validates: Requirements 2.1, 2.2, 2.5**
 
-  - [ ] 5.3 Implement dependency detection and ordering
+  - [x] 5.3 Implement dependency detection and ordering
     - Detect dependencies between micro-tasks
     - Implement topological sort for ordering
     - Mark parallelizable tasks
@@ -111,7 +111,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - **Property 8: Parallelizable marking**
     - **Validates: Requirements 2.3, 2.4**
 
-  - [ ] 5.5 Implement MVP suggestion
+  - [x] 5.5 Implement MVP suggestion
     - Generate minimum viable progress for tasks with deadlines
     - _Requirements: 2.6_
 
@@ -119,7 +119,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - **Property 10: MVP suggestion for deadlines**
     - **Validates: Requirements 2.6**
 
-  - [ ] 5.7 Implement hierarchy preservation
+  - [x] 5.7 Implement hierarchy preservation
     - Ensure parent-child relationships are maintained
     - Update parent's childIds when creating children
     - Preserve context from parent to child
@@ -135,8 +135,8 @@ This implementation plan builds Atomize incrementally, starting with core data m
   - Test with both Gemini and Ollama providers
   - Ask the user if questions arise
 
-- [ ] 7. Clarification Engine
-  - [ ] 7.1 Implement ClarificationEngine
+- [x] 7. Clarification Engine
+  - [x] 7.1 Implement ClarificationEngine
     - Create needsClarification() to detect ambiguous input
     - Implement generateQuestions() with max 3 questions
     - Implement processClarification() to update understanding
@@ -146,7 +146,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - **Property 3: Clarification question limit**
     - **Validates: Requirements 1.4**
 
-  - [ ] 7.3 Implement deadline parsing
+  - [x] 7.3 Implement deadline parsing
     - Parse natural language dates ("tomorrow", "next Friday", "in 3 days")
     - Handle relative and absolute date formats
     - _Requirements: 1.6_
