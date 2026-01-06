@@ -363,29 +363,69 @@ Just type naturally - I'll figure out what you need!`;
 
     if (deadlineResult) {
       deadline = deadlineResult.date;
-    } else {
-      // Try parsing the whole text as a date reference
-      const parsed = parseNaturalDate(text);
-      if (parsed && parsed.confidence > 0.8) {
-        // This might be just a date, not a task
-        // Skip deadline extraction in this case
-      }
     }
 
+    // First create the parent task
     const taskInput: TaskInput = {
       rawInput: text,
       deadline,
     };
 
-    const task = await this.taskManager.createTask(taskInput);
-    const message = this.responseEngine.generateTaskCreatedResponse(task);
-    this.addToHistory('assistant', message, [task.id]);
+    const parentTask = await this.taskManager.createTask(taskInput);
+
+    // AUTO-ATOMIZE: Always break down tasks using LLM
+    try {
+      const result = await this.atomizationEngine.atomize(parentTask);
+      
+      // If we got meaningful micro-tasks (more than 1, or different from original)
+      if (result.microTasks.length > 1 || 
+          (result.microTasks.length === 1 && result.microTasks[0].title !== parentTask.title)) {
+        
+        const createdTasks: Task[] = [];
+        
+        for (const mt of result.microTasks) {
+          const newTask = await this.taskManager.createTask({
+            rawInput: mt.title,
+            title: mt.title,
+            description: mt.description,
+            parentId: parentTask.id,
+            deadline: parentTask.deadline,
+            estimatedMinutes: mt.estimatedMinutes,
+          });
+          createdTasks.push(newTask);
+        }
+
+        // Build response with atomized tasks
+        let message = `Got it! I've broken down "${parentTask.title}" into ${createdTasks.length} actionable steps:\n\n`;
+        message += createdTasks.map((t, i) => `${i + 1}. ${t.title} (${t.estimatedMinutes || 30} min)`).join('\n');
+        
+        if (result.mvpSuggestion) {
+          message += `\n\n💡 MVP: ${result.mvpSuggestion}`;
+        }
+
+        this.addToHistory('assistant', message, [parentTask.id, ...createdTasks.map(t => t.id)]);
+
+        return {
+          type: 'task_created',
+          message,
+          tasks: [parentTask, ...createdTasks],
+          suggestedActions: this.getQuickActions(createdTasks[0]?.id),
+        };
+      }
+    } catch (error) {
+      console.error('Auto-atomization failed:', error);
+      // Fall through to simple task creation
+    }
+
+    // Fallback: just return the single task
+    const message = this.responseEngine.generateTaskCreatedResponse(parentTask);
+    this.addToHistory('assistant', message, [parentTask.id]);
 
     return {
       type: 'task_created',
       message,
-      tasks: [task],
-      suggestedActions: this.getQuickActions(task.id),
+      tasks: [parentTask],
+      suggestedActions: this.getQuickActions(parentTask.id),
     };
   }
 
