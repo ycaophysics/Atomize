@@ -10,24 +10,37 @@ import type { ConversationResponse, QuickAction, UserInput } from '@/lib/manager
 import type { Plan } from '@/lib/managers/plan-manager';
 import { TaskStore, LocalStorageAdapter } from '@/lib/store';
 import { PriorityEngine } from '@/lib/engines';
+import { GeminiProvider } from '@/lib/llm';
+import type { LLMProvider } from '@/lib/llm';
 import type { Task, TaskUpdate } from '@/lib/types';
 
-// Mock LLM provider for demo (replace with real provider)
-const mockLLMProvider = {
-  name: 'mock',
-  async generate() {
-    return {
-      content: 'Task noted!',
-      finishReason: 'stop' as const,
-    };
-  },
-  async generateJSON<T>(): Promise<T> {
-    return {
-      needsClarification: false,
-      confidence: 0.9,
-    } as T;
-  },
-};
+// Create LLM provider based on environment
+function createLLMProvider(): LLMProvider {
+  const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  const model = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.5-flash';
+  
+  if (apiKey) {
+    return new GeminiProvider({ apiKey, model });
+  }
+  
+  // Fallback mock provider for development without API key
+  console.warn('No GEMINI_API_KEY found, using mock provider');
+  return {
+    name: 'mock',
+    async generate() {
+      return {
+        content: 'Task noted!',
+        finishReason: 'stop' as const,
+      };
+    },
+    async generateJSON<T>(): Promise<T> {
+      return {
+        needsClarification: false,
+        confidence: 0.9,
+      } as T;
+    },
+  };
+}
 
 type View = 'chat' | 'plan';
 
@@ -68,7 +81,7 @@ export default function Home() {
       const tm = new TaskManager(taskStore, priorityEngine);
       const pm = new PlanManager(taskStore, priorityEngine);
       const prm = new ProgressManager(taskStore);
-      const cm = new ConversationManager(taskStore, mockLLMProvider);
+      const cm = new ConversationManager(taskStore, createLLMProvider());
 
       setStore(taskStore);
       setTaskManager(tm);
