@@ -13,6 +13,9 @@ export class GeminiProvider implements LLMProvider {
   }
 
   async generate(messages: LLMMessage[], options?: LLMGenerateOptions): Promise<LLMResponse> {
+    if (!this.apiKey) {
+      throw new Error('Gemini API key is missing. Please check your GEMINI_API_KEY environment variable.');
+    }
     const contents = this.convertMessages(messages);
 
     const response = await fetch(
@@ -50,10 +53,10 @@ export class GeminiProvider implements LLMProvider {
       finishReason: this.mapFinishReason(candidate.finishReason),
       usage: data.usageMetadata
         ? {
-            promptTokens: data.usageMetadata.promptTokenCount || 0,
-            completionTokens: data.usageMetadata.candidatesTokenCount || 0,
-            totalTokens: data.usageMetadata.totalTokenCount || 0,
-          }
+          promptTokens: data.usageMetadata.promptTokenCount || 0,
+          completionTokens: data.usageMetadata.candidatesTokenCount || 0,
+          totalTokens: data.usageMetadata.totalTokenCount || 0,
+        }
         : undefined,
     };
   }

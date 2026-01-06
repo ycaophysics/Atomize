@@ -10,36 +10,13 @@ import type { ConversationResponse, QuickAction, UserInput } from '@/lib/manager
 import type { Plan } from '@/lib/managers/plan-manager';
 import { TaskStore, LocalStorageAdapter } from '@/lib/store';
 import { PriorityEngine } from '@/lib/engines';
-import { GeminiProvider } from '@/lib/llm';
+import { ServerActionProvider } from '@/lib/llm/server-action-provider';
 import type { LLMProvider } from '@/lib/llm';
 import type { Task, TaskUpdate } from '@/lib/types';
 
-// Create LLM provider based on environment
+// Create LLM provider
 function createLLMProvider(): LLMProvider {
-  const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-  const model = process.env.NEXT_PUBLIC_GEMINI_MODEL || 'gemini-2.5-flash';
-  
-  if (apiKey) {
-    return new GeminiProvider({ apiKey, model });
-  }
-  
-  // Fallback mock provider for development without API key
-  console.warn('No GEMINI_API_KEY found, using mock provider');
-  return {
-    name: 'mock',
-    async generate() {
-      return {
-        content: 'Task noted!',
-        finishReason: 'stop' as const,
-      };
-    },
-    async generateJSON<T>(): Promise<T> {
-      return {
-        needsClarification: false,
-        confidence: 0.9,
-      } as T;
-    },
-  };
+  return new ServerActionProvider();
 }
 
 type View = 'chat' | 'plan';
@@ -199,21 +176,19 @@ export default function Home() {
         <nav className="flex gap-2">
           <button
             onClick={() => setView('chat')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              view === 'chat'
-                ? 'bg-blue-100 text-blue-700'
-                : 'text-gray-600 hover:bg-gray-100'
-            }`}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${view === 'chat'
+              ? 'bg-blue-100 text-blue-700'
+              : 'text-gray-600 hover:bg-gray-100'
+              }`}
           >
             💬 Chat
           </button>
           <button
             onClick={() => setView('plan')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              view === 'plan'
-                ? 'bg-blue-100 text-blue-700'
-                : 'text-gray-600 hover:bg-gray-100'
-            }`}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${view === 'plan'
+              ? 'bg-blue-100 text-blue-700'
+              : 'text-gray-600 hover:bg-gray-100'
+              }`}
           >
             📋 Plan
           </button>
