@@ -155,7 +155,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - **Property 4: Deadline parsing round-trip**
     - **Validates: Requirements 1.6**
 
-- [-] 8. Task Manager
+- [x] 8. Task Manager
   - [x] 8.1 Implement TaskManager
     - Create createTask() that always appends
     - Implement getTask(), getTasks() with filters
@@ -175,7 +175,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - **Property 23: Today task limit**
     - **Validates: Requirements 6.1, 6.2, 6.4**
 
-- [-] 9. Plan Manager
+- [x] 9. Plan Manager
   - [x] 9.1 Implement PlanManager
     - Create getTodayPlan() with progress tracking
     - Create getWeekPlan() for weekly view
@@ -206,7 +206,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
   - Verify end-to-end task flow works
   - Ask the user if questions arise
 
-- [-] 11. Progress and Streak Tracking
+- [x] 11. Progress and Streak Tracking
   - [x] 11.1 Implement progress tracking
     - Track daily completion counts
     - Calculate and store streaks
@@ -217,7 +217,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - **Property 25: Streak calculation**
     - **Validates: Requirements 8.3**
 
-- [-] 12. Response Engine
+- [x] 12. Response Engine
   - [x] 12.1 Implement ResponseEngine
     - Create generateTaskCreatedResponse() with positive tone
     - Create generateCompletionResponse() with celebration
@@ -230,7 +230,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - Ensure all recommendations include reasoning
     - _Requirements: 13.4, 16.1_
 
-- [-] 13. Conversation Manager
+- [x] 13. Conversation Manager
   - [x] 13.1 Implement ConversationManager
     - Create processInput() to handle all user input
     - Integrate with ClarificationEngine for ambiguous input
@@ -258,7 +258,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
   - Test full conversation flow
   - Ask the user if questions arise
 
-- [-] 15. User Interface - Chat Interface
+- [x] 15. User Interface - Chat Interface
   - [x] 15.1 Create Chat UI component
     - Build chat message list with user/assistant distinction
     - Create input field with send button
@@ -271,7 +271,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - Display clarification questions inline
     - _Requirements: 15.3_
 
-- [-] 16. User Interface - Plan View
+- [x] 16. User Interface - Plan View
   - [x] 16.1 Create Plan View component
     - Display Today section with task cards
     - Display Upcoming section (collapsible)
@@ -290,7 +290,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - Display celebration on completion
     - _Requirements: 6.6, 8.1, 8.2, 8.5_
 
-- [-] 17. User Interface - Task Detail View
+- [x] 17. User Interface - Task Detail View
   - [x] 17.1 Create Task Detail component
     - Show full task information
     - Display micro-task breakdown
@@ -303,7 +303,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - Allow priority override
     - _Requirements: 3.4, 16.2_
 
-- [-] 18. Notification Manager
+- [x] 18. Notification Manager
   - [x] 18.1 Implement NotificationManager
     - Create scheduleReminder() for task reminders
     - Implement snoozeNotification()
@@ -315,7 +315,7 @@ This implementation plan builds Atomize incrementally, starting with core data m
     - Offer to break down repeatedly snoozed tasks
     - _Requirements: 7.3, 7.4, 7.6_
 
-- [ ] 19. Checkpoint - MVP Complete
+- [x] 19. Checkpoint - MVP Complete
   - Ensure all tests pass
   - Test full user flow end-to-end
   - Verify app works with both Gemini and Ollama

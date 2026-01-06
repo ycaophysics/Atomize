@@ -133,7 +133,13 @@ export class ConversationManager {
       if (context?.currentTaskId) {
         const task = await this.taskManager.completeTask(context.currentTaskId);
         const stats = this.progressManager.getProgressStats();
-        const message = this.responseEngine.generateCompletionResponse(task, stats.today);
+        // Convert DayProgress to DayStats format
+        const dayStats = {
+          completedToday: stats.today.completedCount,
+          totalToday: stats.today.totalCount,
+          streak: stats.streak,
+        };
+        const message = this.responseEngine.generateCompletionResponse(task, dayStats);
         this.addToHistory('assistant', message, [task.id]);
         return {
           type: 'task_updated',

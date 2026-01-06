@@ -14,6 +14,12 @@ export interface PriorityFactor {
   explanation: string;
 }
 
+// Partial task type for priority calculation
+export type PriorityInput = Pick<Task, 'priority' | 'createdAt' | 'childIds'> & {
+  deadline?: Date;
+  parentId?: string;
+};
+
 const HOURS_IN_DAY = 24;
 const HOURS_IN_WEEK = 7 * HOURS_IN_DAY;
 
@@ -21,7 +27,7 @@ export class PriorityEngine {
   /**
    * Calculate priority for a single task based on deadline and other factors
    */
-  calculatePriority(task: Task): PriorityResult {
+  calculatePriority(task: Task | PriorityInput): PriorityResult {
     const factors: PriorityFactor[] = [];
     let totalScore = 0;
     let totalWeight = 0;
@@ -104,7 +110,7 @@ export class PriorityEngine {
     };
   }
 
-  private calculateDeadlineFactor(task: Task): PriorityFactor {
+  private calculateDeadlineFactor(task: Task | PriorityInput): PriorityFactor {
     const weight = 50;
 
     if (!task.deadline) {
@@ -160,7 +166,7 @@ export class PriorityEngine {
     };
   }
 
-  private calculateExistingPriorityFactor(task: Task): PriorityFactor {
+  private calculateExistingPriorityFactor(task: Task | PriorityInput): PriorityFactor {
     const weight = 30;
     const priorityValues: Record<PriorityLevel, number> = {
       high: 100,
@@ -176,7 +182,7 @@ export class PriorityEngine {
     };
   }
 
-  private calculateAgeFactor(task: Task): PriorityFactor {
+  private calculateAgeFactor(task: Task | PriorityInput): PriorityFactor {
     const weight = 10;
     const now = new Date();
     const ageInDays = (now.getTime() - task.createdAt.getTime()) / (1000 * 60 * 60 * 24);
@@ -192,7 +198,7 @@ export class PriorityEngine {
     };
   }
 
-  private calculateHierarchyFactor(task: Task): PriorityFactor {
+  private calculateHierarchyFactor(task: Task | PriorityInput): PriorityFactor {
     const weight = 10;
 
     if (task.childIds.length > 0) {

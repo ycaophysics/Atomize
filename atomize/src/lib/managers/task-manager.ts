@@ -18,14 +18,12 @@ export class TaskManager {
    */
   async createTask(input: TaskInput): Promise<Task> {
     // Calculate priority if not provided
-    const tempTask = {
+    const priorityResult = this.priorityEngine.calculatePriority({
       priority: input.priority || 'medium',
       deadline: input.deadline,
       createdAt: new Date(),
       childIds: [],
-    } as Task;
-
-    const priorityResult = this.priorityEngine.calculatePriority(tempTask);
+    });
 
     const taskInput: TaskInput = {
       ...input,
