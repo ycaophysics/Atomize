@@ -3,3 +3,4 @@ node_modules
 .env.local
 data/atomize.json
 data/atomize.db
+.DS_Store
